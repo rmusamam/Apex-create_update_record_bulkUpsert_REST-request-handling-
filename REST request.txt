@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                 xmlns="http://soap.sforce.com/schemas/class/SVC_AddOrUpdateCustomer">
+    <soapenv:Header>
+        <SessionHeader>
+            <sessionId>00D7d0000077p9x!AQ8AQO3jkaXou9gW3c83lABXhcXSuBYyZ8QODlNVHcY4nxPar1r3fp.H5jKr84lNaf07W05.VZAxFUl1hG9DFVe79XSB0.ZL
+            </sessionId>
+        </SessionHeader>
+    </soapenv:Header>
+    <soapenv:Body>
+        <findAndUpdateOrCreateContact>
+            <customerData>
+                <RetailStoreID>226</RetailStoreID>
+                <Instrument/>
+                <OrgName/>
+                <CustOrgTypcode/>
+                <Source>POS</Source>
+                <Prospect>false</Prospect>
+                <LastUpdateInfo/>
+                <Affiliation>
+                    <RetailStoreID></RetailStoreID>
+                </Affiliation>
+                <EntityInformation>
+                    <Individual>
+                        <Name>
+                            <Name Location="First">Richie</Name>
+                            <Name Location="Last">Bold</Name>
+                        </Name>
+                        <ContactInformation>
+                            <Address ContactPreferenceCode="Y" PrimaryFlag="true" TypeCode="HOME">
+                                <AddressLine1>789 Fruit Blvd</AddressLine1>
+                                <City>Shawnee Mission</City>
+                                <Country>US</Country>
+                                <Territory>KS</Territory>
+                                <PostalCode>66217</PostalCode>
+                            </Address>
+                            <Telephone ContactPreferenceCode="Y" PrimaryFlag="true" TypeCode="HOME">
+                                <PhoneNumber></PhoneNumber>
+                                <Extension/>
+                            </Telephone>
+                            <Telephone ContactPreferenceCode="Y" DeleteAllByType="BUSINESS" PrimaryFlag="false" TypeCode="BUSINESS"/>
+                            <Telephone ContactPreferenceCode="Y" PrimaryFlag="false" TypeCode="MOBILE">
+                                <PhoneNumber>2221110003</PhoneNumber>
+                                <Extension/>
+                            </Telephone>
+                            <Telephone ContactPreferenceCode="N" DeleteAllByType="FAX" PrimaryFlag="false" TypeCode="FAX"/>
+                        </ContactInformation>
+                        <PersonalSummary>
+                            <GenderType/>
+                            <Rent>false</Rent>
+                        </PersonalSummary>
+                    </Individual>
+                </EntityInformation>
+                <PersonalPreferences>
+                    <ContactPreference ContactType="Email" Permission="true"/>
+                    <ContactPreference ContactType="Phone" Permission="false"/>
+                    <ContactPreference ContactType="Fax" Permission="false"/>
+                    <ContactPreference ContactType="Mail" Permission="true"/>
+                </PersonalPreferences>
+                
+                <AlternateKey TypeCode="XSTORE_CUST_ID">
+                
+                </AlternateKey>
+                <CustomAttribute name="PARTY_TYPE_CODE">
+                    <AttributeValue>CUSTOMER</AttributeValue>
+                </CustomAttribute>
+                <CustomAttribute name="ACTIVE_FLAG">
+                    <AttributeValue>true</AttributeValue>
+                </CustomAttribute>
+                <CustomAttribute name="EMAIL_RCPT_FLAG">
+                    <AttributeValue>false</AttributeValue>
+                </CustomAttribute>
+                <CustomAttribute name="PROMPT_TO_JOIN_LOYALTY">
+                    <AttributeValue>true</AttributeValue>
+                </CustomAttribute>
+                <CustomAttribute name="Bridal_Interest">
+                    <AttributeValue>false</AttributeValue>
+                </CustomAttribute>
+                <CustomAttribute name="Event_Interest">
+                    <AttributeValue>false</AttributeValue>
+                </CustomAttribute>
+                <CustomAttribute name="Receive_Text_Msg">
+                    <AttributeValue>false</AttributeValue>
+                </CustomAttribute>
+                <CustomAttribute name="Private_Label_Cardholder">
+                    <AttributeValue>FALSE</AttributeValue>
+                </CustomAttribute>
+            </customerData>
+        </findAndUpdateOrCreateContact>
+    </soapenv:Body>
+</soapenv:Envelope>

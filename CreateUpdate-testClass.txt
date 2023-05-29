@@ -1,0 +1,89 @@
+@isTest
+
+private class SVC_AddOrUpdateCustomerTest {
+    
+    static SVC_AddOrUpdateCustomer.CustomerData createSampleCustomerData() {
+        SVC_AddOrUpdateCustomer.CustomerData customerData = new SVC_AddOrUpdateCustomer.CustomerData();
+        
+        // Set the values for customerData
+        customerData.RetailStoreID = '12345';
+        customerData.Instrument = 'Instrument1';
+        customerData.OrgName = 'Org1';
+        customerData.CustOrgTypcode = 'Type1';
+        customerData.Source = 'CC';
+        customerData.Prospect = false;
+        customerData.LastUpdateInfo = 'Info1';
+        
+        SVC_AddOrUpdateCustomer.Affiliation affiliation = new SVC_AddOrUpdateCustomer.Affiliation();
+        affiliation.RetailStoreID = '54321';
+        customerData.Affiliation = affiliation;
+        
+        SVC_AddOrUpdateCustomer.EntityInformation entityInformation = new SVC_AddOrUpdateCustomer.EntityInformation();
+        SVC_AddOrUpdateCustomer.Individual individual = new SVC_AddOrUpdateCustomer.Individual();
+        SVC_AddOrUpdateCustomer.Name name = new SVC_AddOrUpdateCustomer.Name();
+        name.Name = new List<String>{ 'John', 'Doe' };
+        individual.Name = name;
+        SVC_AddOrUpdateCustomer.ContactInformation contactInformation = new SVC_AddOrUpdateCustomer.ContactInformation();
+        SVC_AddOrUpdateCustomer.Address address = new SVC_AddOrUpdateCustomer.Address();
+        address.AddressLine1 = '123 Main St';
+        address.City = 'City1';
+        address.Country = 'Country1';
+        address.Territory = 'Territory1';
+        address.PostalCode = '12345';
+        contactInformation.Address = address;
+        SVC_AddOrUpdateCustomer.Telephone telephone = new SVC_AddOrUpdateCustomer.Telephone();
+        telephone.PhoneNumber = '123-456-7890';
+        telephone.Extension = '123';
+        contactInformation.Telephone = new List<SVC_AddOrUpdateCustomer.Telephone>{ telephone };
+        individual.ContactInformation = contactInformation;
+        SVC_AddOrUpdateCustomer.PersonalSummary personalSummary = new SVC_AddOrUpdateCustomer.PersonalSummary();
+        personalSummary.GenderType = 'Male';
+        personalSummary.Rent = true;
+        individual.PersonalSummary = personalSummary;
+        entityInformation.Individual = individual;
+        customerData.EntityInformation = entityInformation;
+        
+        SVC_AddOrUpdateCustomer.PersonalPreferences personalPreferences = new SVC_AddOrUpdateCustomer.PersonalPreferences();
+        personalPreferences.ContactPreference = 'Preference1';
+        customerData.PersonalPreferences = personalPreferences;
+        
+        SVC_AddOrUpdateCustomer.AlternateKey alternateKey = new SVC_AddOrUpdateCustomer.AlternateKey();
+        alternateKey.RetailStoreID = '98765';
+        customerData.AlternateKey = alternateKey;
+        
+        SVC_AddOrUpdateCustomer.CustomAttribute customAttribute = new SVC_AddOrUpdateCustomer.CustomAttribute();
+        customAttribute.AttributeValue = 'Value1';
+        customerData.CustomAttribute = new List<SVC_AddOrUpdateCustomer.CustomAttribute>{ customAttribute };
+        
+        return customerData;
+    }
+
+    
+    
+    
+    @isTest
+    static void testFindAndUpdateOrCreateContact() {
+        // Create test data
+        SVC_AddOrUpdateCustomer.CustomerData customerData = createSampleCustomerData();
+        Account Retail_Location_Id  				= new Account();
+        Retail_Location_Id.Name						= 'testAcc';
+        Retail_Location_Id.Retail_Location_Id__c	= '12345';
+        insert Retail_Location_Id;
+        
+        // Perform the test
+        Test.startTest();
+        SVC_AddOrUpdateCustomer.ContactResponse response = SVC_AddOrUpdateCustomer.findAndUpdateOrCreateContact(customerData);
+        response = SVC_AddOrUpdateCustomer.findAndUpdateOrCreateContact(customerData);
+        response = SVC_AddOrUpdateCustomer.findAndUpdateOrCreateContact(customerData);
+
+
+        Test.stopTest();
+        
+        // Assert the results
+        System.assertEquals(204, response.statusCode, 'Expected status code to be 204');
+        //System.assertEquals('Multiple contacts found', response.statusMessage, 'Expected status message to be "Multiple contacts found"');
+        //System.assertEquals(0, response.contacts.size(), 'Expected contacts list to be empty');
+    }
+    
+    
+}

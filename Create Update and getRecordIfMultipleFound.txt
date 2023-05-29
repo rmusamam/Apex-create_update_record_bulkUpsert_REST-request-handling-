@@ -1,0 +1,181 @@
+global class SVC_AddOrUpdateCustomer
+{
+    static Map <String, Api_MetaData__mdt> apiConfig = Api_MetaData__mdt.getAll();
+    
+    //wrapper class give us object so we can access data
+    global class CustomerData {
+        webservice String RetailStoreID;
+        webservice String Instrument;
+        webservice String OrgName;
+        webservice String CustOrgTypcode;
+        webservice String Source;
+        webservice Boolean Prospect;
+        webservice String LastUpdateInfo;
+        webservice Affiliation Affiliation;
+        webservice EntityInformation EntityInformation;
+        webservice PersonalPreferences PersonalPreferences;
+        webservice AlternateKey AlternateKey;
+        webservice List<CustomAttribute> CustomAttribute;
+        
+        
+    }
+    //webservice Affiliation Affiliation;
+    global class AlternateKey {
+        webservice String RetailStoreID;        
+    }
+    
+    //webservice EntityInformation EntityInformation;
+    global class EntityInformation{
+        webservice Individual Individual;
+    }
+    
+    global class Individual {
+        webservice Name Name;
+        webservice ContactInformation ContactInformation;
+        webservice PersonalSummary PersonalSummary;
+    }
+    
+    global class Name {
+        webservice List<String> Name;
+        //webservice String Last;
+    }
+    /*global class Name {
+webservice String First;
+webservice String Last;
+}*/    
+    
+    global class ContactInformation {
+        webservice Address Address;
+        webservice List<Telephone> Telephone;
+    }
+    
+    global class Address {
+        webservice String AddressLine1;
+        webservice String City;
+        webservice String Country;
+        webservice String Territory;
+        webservice String PostalCode;
+    }
+    
+    global class Telephone {
+        webservice String PhoneNumber;
+        webservice String Extension;
+    }
+    
+    
+    global class PersonalSummary {
+        webservice String GenderType;
+        webservice Boolean Rent;
+        
+    }
+    
+    
+    //webservice PersonalPreferences PersonalPreferences;
+    global class PersonalPreferences {
+        webservice String ContactPreference;        
+    }
+    
+    
+    // webservice AlternateKey AlternateKey;
+    global class Affiliation {
+        webservice String RetailStoreID;        
+    }
+    
+    // webservice List<CustomAttribute> CustomAttribute;
+    global class CustomAttribute {
+        webservice String AttributeValue;        
+    }
+    
+    
+    global class ContactResponse {
+        webservice Integer statusCode;
+        webservice String statusMessage;
+        webservice List<Contact> contacts;
+        
+        public ContactResponse(Integer statusCode, String statusMessage, List<Contact> contacts) {
+            this.statusCode 	= statusCode;
+            this.statusMessage	= statusMessage;
+            this.contacts 		= contacts;
+        }
+    }
+    
+    webService static ContactResponse findAndUpdateOrCreateContact(CustomerData customerData) {
+        
+        String firstName 				= customerData.EntityInformation.Individual.Name.Name[0];
+        String lastName 				= customerData.EntityInformation.Individual.Name.Name[1];
+        String phone     				= customerData.EntityInformation.Individual.ContactInformation.Telephone[0].PhoneNumber;
+        String city						= customerData.EntityInformation.Individual.ContactInformation.Address.City;	
+        String country					= customerData.EntityInformation.Individual.ContactInformation.Address.Country;	
+        String state					= customerData.EntityInformation.Individual.ContactInformation.Address.Territory;	
+        String postalCode				= customerData.EntityInformation.Individual.ContactInformation.Address.PostalCode;
+        String street 					= customerData.EntityInformation.Individual.ContactInformation.Address.AddressLine1;
+        String genderType				= customerData.EntityInformation.Individual.PersonalSummary.GenderType;
+        String retailStoreID			= String.valueOf(customerData.RetailStoreID);
+        String affliateRetailStoreID	= customerData.Affiliation.RetailStoreID;
+        
+        //BELOW is the ACTUAL SOQL DON'T DEL
+        // List<Contact> contacts = [SELECT Id FROM Contact WHERE FirstName = : contactRequest.firstName AND LastName = : contactRequest.lastName AND (Email = :contactRequest.email OR Phone = :contactRequest.phone) AND RecordType.Name = 'Customer'];
+        List<Contact> contacts 			= [SELECT Id, Helzberg_Id__c FROM Contact WHERE FirstName = :firstName AND LastName = :lastName AND RecordType.Name = 'Customer']; //for test Purpose Removing=>  'AND  Phone = :phone'
+        
+        
+        ContactResponse response;
+        Id customerRecordTypeId = Schema.SObjectType.Contact.getRecordTypeInfosByName().get('Customer').getRecordTypeId();
+        
+        system.debug('the list contact: '+contacts);
+        if (contacts.size() > 1) {
+            // Multiple contacts found
+            response = new ContactResponse(200, 'Multiple contacts found', contacts);
+            System.debug('Multiple contacts found: ' + contacts);
+        }
+        // will run ternary operator to upsert
+        else{
+            Contact newContact = contacts.size() == 1? contacts.get(0) : new Contact(); 
+            
+            newContact.FirstName 						= firstName;
+            newContact.LastName 						= lastName;
+            newContact.Phone 							= phone;
+            newContact.RecordTypeId 					= customerRecordTypeId;
+            newContact.Source__c						= customerData.Source;
+            newContact.MailingStreet					= street;
+            newContact.MailingCity						= city;
+            newContact.MailingCountry					= country;
+            newContact.MailingState						= state;
+            newContact.MailingPostalCode				= postalCode;
+            newContact.GenderIdentity					= genderType == 'Male' ? 'M' : 'F';
+            
+            List<Account> accForRetailStoreID	= [SELECT Id, Retail_Location_Id__c FROM Account WHERE Retail_Location_Id__c = :retailStoreID];
+            System.debug('the Account :'+accForRetailStoreID);
+            
+            
+            if(accForRetailStoreID.size() != 0){
+                String retailStoreIDGet = accForRetailStoreID.get(0).Id;
+                newContact.Retail_Store__c 				= retailStoreIDGet;
+                newContact.Affiliate_Retail_Store__c		= retailStoreIDGet; 
+            } 
+            
+            
+            
+            
+            /* 
+newContact.Email_Contact_Preference__c 		=	
+newContact.Phone_Contact_Preference__c 		=
+newContact.Email_Contact_Preference__c 		= 
+newContact.Active__c				=
+newContact.Event_Interest__c				=
+newContact.Bridal_Interest__c				=
+newContact.Receive_Text_Msg__c				=
+newContact.Private_Label_Cardholder__c		=
+*/   
+            upsert newContact;
+            System.debug('New contact created: ' + newContact);
+            
+            List<Contact> contactList = new List<Contact>{newContact};
+                return  contacts.size() == 1? new ContactResponse(204, 'Contact Updated'    , contactList)
+                : new ContactResponse(201, 'New contact created', contactList);
+            
+        }
+        return response;
+    }
+    
+    
+}
